@@ -33,7 +33,6 @@ def get_only_changed_values(old_data: dict, new_data: dict):
         else:
             # If the key is not present in dict2, add to the diff_dict
             diff_dict[key] = new_data[key]
-            old_dict[key] = old_data[key]
 
     return diff_dict, old_dict
 
