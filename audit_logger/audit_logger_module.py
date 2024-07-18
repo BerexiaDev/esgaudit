@@ -45,7 +45,7 @@ class AuditBlueprint(Blueprint):
             elif request.method == 'GET':
                 new_data = old_data = None
             else:
-                new_data, old_data = get_only_changed_values_and_id(old_data or {}, new_data) if old_data else new_data
+                new_data, old_data = get_only_changed_values_and_id(old_data or {}, new_data) if old_data else (new_data, old_data)
 
             action = get_action(request.method, response.status_code)
             self.create_log(action, request.path, new_value=new_data, old_value=old_data)
