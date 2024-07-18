@@ -48,7 +48,7 @@ class AuditBlueprint(Blueprint):
             elif request.method == 'GET':
                 new_data = old_data = None
             else:
-                if not new_data:
+                if g.get("new_data") is None:
                     new_data, old_data = get_only_changed_values_and_id(old_data or {}, new_data) if old_data else (new_data, old_data)
 
             action = get_action(request.method, response.status_code)
