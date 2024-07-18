@@ -34,10 +34,18 @@ class AuditBlueprint(Blueprint):
 
             if request.method == 'DELETE':
                 new_data = None
+                if old_data:
+                    old_data = {
+                        "_id": old_data.get("_id"),
+                        "name": old_data.get("name")
+                    }
+                    if old_data["name"] is None:
+                        old_data.pop("name", None)
+
             elif request.method == 'GET':
                 new_data = old_data = None
             else:
-                new_data = get_only_changed_values_and_id(old_data or {}, new_data) if old_data else new_data
+                new_data, old_data = get_only_changed_values_and_id(old_data or {}, new_data) if old_data else new_data
 
             action = get_action(request.method, response.status_code)
             self.create_log(action, request.path, new_value=new_data, old_value=old_data)
