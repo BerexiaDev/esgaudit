@@ -6,7 +6,7 @@ from audit_logger.utils import get_json_body, get_only_changed_values_and_id, ge
 from audit_logger.mongo_db import MongoDB
 
 SUCCESS_STATUS_CODES = [200, 201, 204]
-DEFAULT_LOG_METHODS = ["GET", "POST", "PUT", "DELETE"]
+DEFAULT_LOG_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH"]
 
 
 class AuditBlueprint(Blueprint):

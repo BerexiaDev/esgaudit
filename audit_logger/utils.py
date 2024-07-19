@@ -56,7 +56,7 @@ def get_action(http_method: str, status_code: int) -> str:
             return "CREATE"
         return "UPDATE"
 
-    if http_method == "PUT":
+    if http_method == "PUT" or http_method == "PATCH":
         return "UPDATE"
 
     if http_method == "DELETE":
