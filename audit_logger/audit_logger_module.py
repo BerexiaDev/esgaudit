@@ -36,7 +36,7 @@ class AuditBlueprint(Blueprint):
                 new_data = get_json_body(request)
 
             if request.method == 'DELETE':
-                new_data = None
+                new_data = new_data or None
                 if old_data:
                     old_data = {
                         "_id": old_data.get("_id"),
