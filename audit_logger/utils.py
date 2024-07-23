@@ -1,7 +1,5 @@
-from datetime import datetime
 from typing import Union
-
-from flask import Request, g
+from flask import Request
 
 
 def get_json_body(req: Request) -> Union[list, dict]:

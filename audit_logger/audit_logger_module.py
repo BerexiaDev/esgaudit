@@ -1,5 +1,4 @@
 from datetime import datetime
-from enum import Enum
 
 from flask import Blueprint, request, g
 from audit_logger.utils import get_json_body, get_only_changed_values_and_id, get_action
@@ -25,10 +24,7 @@ class AuditBlueprint(Blueprint):
 
     def after_data_request(self, response):
         if self._is_loggable(response):
-            if g.get("old_data"):
-                old_data = g.old_data
-            else:
-                old_data = None
+            old_data = g.get("old_data", None)
 
             if g.get("new_data"):
                 new_data = g.new_data
@@ -58,11 +54,15 @@ class AuditBlueprint(Blueprint):
 
     def get_audit_collection(self):
         if not self.audit_collection:
-            MongoDB.create_instance()
-            self.audit_collection = MongoDB._instance._db["audit"]
+            self.audit_collection = MongoDB.get_collection("audit")
 
     def create_log(self, action: str, endpoint: str, new_value=None, old_value=None):
-        user_info = g.auth_user if g.get("auth_user") else {}
+        # TODO Change this when azure ad integrated
+        # user_info = g.auth_user if g.get("auth_user") else {}
+        user_info = {
+            "email": "dummy@email.com",
+            "fullname": "Dummy Name"
+        }
 
         audit_log = {
             "collection": g.get("table_name"),
