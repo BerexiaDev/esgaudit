@@ -1,3 +1,5 @@
+import copy
+
 from typing import Union
 from flask import Request
 
@@ -24,6 +26,14 @@ def get_only_changed_values(old_data: dict, new_data: dict):
                     diff_dict[key] = new_diff
                 if old_diff:
                     old_dict[key] = old_diff
+            elif isinstance(new_data[key], list) and isinstance(old_data[key], list):
+                new_d1 = copy.deepcopy(new_data[key])
+                old_d1 = copy.deepcopy(old_data[key])
+                new_d1.sort()
+                old_d1.sort()
+                if new_d1 != old_d1:
+                    diff_dict[key] = new_data[key]
+                    old_dict[key] = old_data[key]
             elif new_data[key] != old_data[key]:
                 # If the values are different, add to the diff_dict
                 diff_dict[key] = new_data[key]
