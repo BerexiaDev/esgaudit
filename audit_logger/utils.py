@@ -69,3 +69,13 @@ def get_action(http_method: str, status_code: int) -> str:
 
     if http_method == "DELETE":
         return "DELETE"
+
+
+def get_primary_key_value(key_list: list, data: dict):
+    if not isinstance(data, dict):
+        return None
+
+    if len(key_list) == 1:
+        return data.get(key_list[0])
+
+    return get_primary_key_value(key_list[1:], data.get(key_list[0]))

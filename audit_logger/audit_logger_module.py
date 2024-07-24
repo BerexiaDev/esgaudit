@@ -6,6 +6,19 @@ from audit_logger.mongo_db import MongoDB
 
 SUCCESS_STATUS_CODES = [200, 201, 204]
 DEFAULT_LOG_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH"]
+PRIMARY_KEY_MAPPING = {
+    "target_settings": "action",
+    "attachments": "filename",
+    "bilan_carbon": "campaign_name",
+    "bilan_factor": "type_emission.large_name",
+    "form_checks": "technical_check",
+    "notifications": "content",
+    "users": "email",
+    "ref_sectors": "label",
+    "group_entities": "label",
+    "group_zones": "label",
+    "entity_domaines": "h1"
+}
 
 
 class AuditBlueprint(Blueprint):
@@ -34,12 +47,11 @@ class AuditBlueprint(Blueprint):
             if request.method == 'DELETE':
                 new_data = new_data or None
                 if old_data:
-                    old_data = {
-                        "_id": old_data.get("_id"),
-                        "name": old_data.get("name")
-                    }
-                    if old_data["name"] is None:
-                        old_data.pop("name", None)
+                    old_data = {"_id": old_data.get("_id")}
+                    if g.get("table_name"):
+                        primary_key = PRIMARY_KEY_MAPPING.get(g.get("table_name"), "name")
+                        primary_value = get_primary_key_value(primary_key.split("."), old_data)
+                        old_data[primary_key] = primary_value
 
             elif request.method == 'GET':
                 new_data = old_data = None
