@@ -51,7 +51,7 @@ class AuditBlueprint(Blueprint):
                     if g.get("table_name"):
                         primary_key = PRIMARY_KEY_MAPPING.get(g.get("table_name"), "name")
                         primary_value = get_primary_key_value(primary_key.split("."), old_data)
-                        old_data[primary_key] = primary_value
+                        old_data["nam"] = primary_value
 
             elif request.method == 'GET':
                 new_data = old_data = None
