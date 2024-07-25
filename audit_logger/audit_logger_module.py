@@ -43,6 +43,9 @@ class AuditBlueprint(Blueprint):
         if not table_name or table_name == AUDIT_COLLECTION_NAME or endpoint == "/":
             return response
 
+        primary_key = PRIMARY_KEY_MAPPING.get(table_name, "name")
+        primary_key_splits = primary_key.split(".")
+
         if self._is_loggable(response):
             old_data = g.get("old_data", None)
 
@@ -55,8 +58,7 @@ class AuditBlueprint(Blueprint):
                 new_data = new_data or None
                 if old_data:
                     old_data = {"_id": old_data.get("_id")}
-                    primary_key = PRIMARY_KEY_MAPPING.get(table_name, "name")
-                    primary_value = get_primary_key_value(primary_key.split("."), old_data)
+                    primary_value = get_primary_key_value(primary_key_splits, old_data)
                     old_data["name"] = primary_value
 
             elif request.method == 'GET':
@@ -64,6 +66,11 @@ class AuditBlueprint(Blueprint):
             else:
                 if g.get("new_data") is None:
                     new_data, old_data = get_only_changed_values_and_id(old_data or {}, new_data) if old_data else (new_data, old_data)
+
+                if response.status_code == 201:
+                    primary_value = get_primary_key_value(primary_key_splits, new_data)
+                    new_data["name"] = primary_value
+
 
             action = get_action(request.method, response.status_code)
             self.create_log(action, endpoint, new_value=new_data, old_value=old_data)
