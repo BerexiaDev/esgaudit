@@ -36,6 +36,12 @@ class AuditBlueprint(Blueprint):
         return request.method in self.log_methods and response.status_code in SUCCESS_STATUS_CODES
 
     def after_data_request(self, response):
+        table_name = g.get("table_name")
+        endpoint = request.path
+
+        if not table_name or endpoint == "/":
+            return response
+
         if self._is_loggable(response):
             old_data = g.get("old_data", None)
 
@@ -48,10 +54,9 @@ class AuditBlueprint(Blueprint):
                 new_data = new_data or None
                 if old_data:
                     old_data = {"_id": old_data.get("_id")}
-                    if g.get("table_name"):
-                        primary_key = PRIMARY_KEY_MAPPING.get(g.get("table_name"), "name")
-                        primary_value = get_primary_key_value(primary_key.split("."), old_data)
-                        old_data["name"] = primary_value
+                    primary_key = PRIMARY_KEY_MAPPING.get(table_name, "name")
+                    primary_value = get_primary_key_value(primary_key.split("."), old_data)
+                    old_data["name"] = primary_value
 
             elif request.method == 'GET':
                 new_data = old_data = None
@@ -60,7 +65,7 @@ class AuditBlueprint(Blueprint):
                     new_data, old_data = get_only_changed_values_and_id(old_data or {}, new_data) if old_data else (new_data, old_data)
 
             action = get_action(request.method, response.status_code)
-            self.create_log(action, request.path, new_value=new_data, old_value=old_data)
+            self.create_log(action, endpoint, new_value=new_data, old_value=old_data)
 
         return response
 
