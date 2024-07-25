@@ -69,7 +69,9 @@ class AuditBlueprint(Blueprint):
 
                 if response.status_code == 201:
                     primary_value = get_primary_key_value(primary_key_splits, new_data)
-                    new_data["name"] = primary_value
+                    new_data = {
+                        "name": primary_value
+                    }
 
 
             action = get_action(request.method, response.status_code)
