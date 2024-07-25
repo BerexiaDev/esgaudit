@@ -19,6 +19,7 @@ PRIMARY_KEY_MAPPING = {
     "group_zones": "label",
     "entity_domaines": "h1"
 }
+AUDIT_COLLECTION_NAME = "audit"
 
 
 class AuditBlueprint(Blueprint):
@@ -39,7 +40,7 @@ class AuditBlueprint(Blueprint):
         table_name = g.get("table_name")
         endpoint = request.path
 
-        if not table_name or endpoint == "/":
+        if not table_name or table_name == AUDIT_COLLECTION_NAME or endpoint == "/":
             return response
 
         if self._is_loggable(response):
@@ -71,7 +72,7 @@ class AuditBlueprint(Blueprint):
 
     def get_audit_collection(self):
         if not self.audit_collection:
-            self.audit_collection = MongoDB.get_collection("audit")
+            self.audit_collection = MongoDB.get_collection(AUDIT_COLLECTION_NAME)
 
     def create_log(self, action: str, endpoint: str, new_value=None, old_value=None):
         # TODO Change this when azure ad integrated
