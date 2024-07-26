@@ -27,13 +27,30 @@ def get_only_changed_values(old_data: dict, new_data: dict):
                 if old_diff:
                     old_dict[key] = old_diff
             elif isinstance(new_data[key], list) and isinstance(old_data[key], list):
-                new_d1 = copy.deepcopy(new_data[key])
-                old_d1 = copy.deepcopy(old_data[key])
-                new_d1.sort()
-                old_d1.sort()
-                if new_d1 != old_d1:
-                    diff_dict[key] = new_data[key]
-                    old_dict[key] = old_data[key]
+                if len(new_data[key]) > 0 and isinstance(new_data[key][0], dict):
+                    new_dat = []
+                    old_dat = []
+                    for ind, val in enumerate(new_data[key]):
+                        if ind >= len(old_data[key]):
+                            new_dat.append(val)
+                            continue
+                        new_diff, old_diff = get_only_changed_values(old_data[key][ind], val)
+                        if new_diff:
+                            new_dat.append(new_diff)
+                        if old_diff:
+                            old_dat.append(old_diff)
+                    if new_dat:
+                        diff_dict[key] = new_dat
+                    if old_dat:
+                        old_dict[key] = old_dat
+                else:
+                    new_d1 = copy.deepcopy(new_data[key])
+                    old_d1 = copy.deepcopy(old_data[key])
+                    new_d1.sort()
+                    old_d1.sort()
+                    if new_d1 != old_d1:
+                        diff_dict[key] = new_data[key]
+                        old_dict[key] = old_data[key]
             elif new_data[key] != old_data[key]:
                 # If the values are different, add to the diff_dict
                 diff_dict[key] = new_data[key]

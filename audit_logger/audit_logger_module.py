@@ -68,10 +68,16 @@ class AuditBlueprint(Blueprint):
                     new_data, old_data = get_only_changed_values_and_id(old_data or {}, new_data) if old_data else (new_data, old_data)
 
                 if response.status_code == 201:
-                    primary_value = get_primary_key_value(primary_key_splits, new_data)
-                    new_data = {
-                        "name": primary_value
-                    }
+                    if isinstance(new_data, list):
+                        final_value = [get_primary_key_value(primary_key_splits, d) for d in new_data]
+                        new_data = {
+                            "name": ",".join(final_value)
+                        }
+                    else:
+                        primary_value = get_primary_key_value(primary_key_splits, new_data)
+                        new_data = {
+                            "name": primary_value
+                        }
 
 
             action = get_action(request.method, response.status_code)
