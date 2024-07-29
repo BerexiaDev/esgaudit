@@ -93,12 +93,7 @@ class AuditBlueprint(Blueprint):
             self.audit_collection = MongoDB.get_collection(AUDIT_COLLECTION_NAME)
 
     def create_log(self, action: str, endpoint: str, new_value=None, old_value=None):
-        # TODO Change this when azure ad integrated
-        # user_info = g.auth_user if g.get("auth_user") else {}
-        user_info = {
-            "email": "dummy@email.com",
-            "fullname": "Dummy Name"
-        }
+        user_info = g.auth_user if g.get("auth_user") else {"email": "dummy@email.com", "fullname": "Dummy Name"}
 
         audit_log = {
             "collection": g.get("table_name"),
