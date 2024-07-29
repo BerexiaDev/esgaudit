@@ -57,9 +57,12 @@ class AuditBlueprint(Blueprint):
             if request.method == 'DELETE':
                 new_data = new_data or None
                 if old_data:
-                    old_data = {"_id": old_data.get("_id")}
+                    _id = old_data.get("_id")
                     primary_value = get_primary_key_value(primary_key_splits, old_data)
-                    old_data["name"] = primary_value
+                    old_data = {
+                        "_id": _id,
+                        "name": primary_value
+                    }
 
             elif request.method == 'GET':
                 new_data = old_data = None
